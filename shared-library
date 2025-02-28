@@ -1,10 +1,10 @@
 node.js-shared-library/
-├── vars/
-│   ├── checkoutCode.groovy
-│   ├── installDependencies.groovy
-│   ├── runTests.groovy
-│   ├── buildApplication.groovy
-│   ├── deployApplication.groovy
-├── src/
-├── README.md
-├── resources/
+ ├── vars/
+ │    ├── checkoutCode.groovy
+ │    ├── installDependencies.groovy
+ │    ├── runTests.groovy
+ │    ├── buildApplication.groovy
+ │    ├── deployApplication.groovy
+ ├── src/
+ ├── resources/
+ ├── README.md
