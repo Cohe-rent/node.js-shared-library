@@ -1,113 +1,76 @@
 pipeline {
-    agent any
+    agent {
+        kubernetes {
+            yaml '''
+            apiVersion: v1
+            kind: Pod
+            metadata:
+              labels:
+                jenkins/label: jenkins-agent
+            spec:
+              containers:
+              - name: jnlp
+                image: jenkins/inbound-agent:latest
+                resources:
+                  limits:
+                    memory: 512Mi
+                    cpu: 512m
+                  requests:
+                    memory: 512Mi
+                    cpu: 512m
+            '''
+        }
+    }
 
     environment {
-        NODE_ENV = 'production'
+        REPO_URL = 'https://github.com/Cohe-rent/node.js-shared-library.git'
+        BRANCH = 'main'
     }
 
     stages {
         stage('Checkout Code') {
             steps {
                 script {
-                    checkoutCode()
+                    checkout scmGit(
+                        branches: [[name: env.BRANCH]],
+                        userRemoteConfigs: [[url: env.REPO_URL]]
+                    )
                 }
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                script {
-                    installDependencies()
-                }
+                sh 'npm install'
             }
         }
 
         stage('Run Tests') {
             steps {
-                script {
-                    runTests()
-                }
+                sh 'npm test'
             }
         }
 
         stage('Build Application') {
             steps {
-                script {
-                    buildApplication()
-                }
+                sh 'npm run build'
             }
         }
 
         stage('Deploy Application') {
             steps {
-                script {
-                    deployApplication()
-                }
+                sh 'echo "Deploying application..."'
+                // Add your deployment commands here
             }
         }
     }
 
     post {
         success {
-            echo '✅ Deployment Successful!'
+            echo 'Build and deployment successful!'
         }
         failure {
-            echo '❌ Pipeline Failed!'
-        }
-        always {
-            echo '📝 Cleaning up workspace...'
-            cleanWs()
-        }
-    }
-}
-
-/* Shared Library Functions */
-def checkoutCode() {
-    stage('Checkout Code') {
-        steps {
-            git branch: 'main', url: 'https://github.com/Cohe-rent/node.js-shared-library.git'
-        }
-    }
-}
-
-def installDependencies() {
-    stage('Install Dependencies') {
-        steps {
-            container('nodejs') {
-                sh 'ls -la'  // Debugging step
-                sh 'node -v'
-                sh 'npm install'
-            }
-        }
-    }
-}
-
-def runTests() {
-    stage('Run Tests') {
-        steps {
-            container('nodejs') {
-                sh 'npm test || echo "No tests found, skipping..."'
-            }
-        }
-    }
-}
-
-def buildApplication() {
-    stage('Build Application') {
-        steps {
-            container('nodejs') {
-                sh 'npm run build || echo "No build step defined, skipping..."'
-            }
-        }
-    }
-}
-
-def deployApplication() {
-    stage('Deploy (Start Server)') {
-        steps {
-            container('nodejs') {
-                sh 'if [ -f service.js ]; then nohup node service.js & else echo "service.js not found, skipping..."; fi'
-            }
+            echo 'Build failed!'
         }
     }
 }
