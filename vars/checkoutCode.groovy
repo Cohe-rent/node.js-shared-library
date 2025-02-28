@@ -4,7 +4,9 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                checkoutCode()
+                script {
+                    checkoutCode('main', 'https://github.com/Cohe-rent/node.js-shared-library.git')
+                }
             }
         }
     }
