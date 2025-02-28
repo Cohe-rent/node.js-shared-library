@@ -11,8 +11,8 @@ pipeline {
         stage('Convert Text') {
             steps {
                 script {
-                    import org.mycompany.Utilities
-                    echo "Uppercase: ${Utilities.toUpperCase('hello world')}"
+                    def result = org.mycompany.Utilities.toUpperCase('hello world')
+                    echo "Uppercase: ${result}"
                 }
             }
         }
