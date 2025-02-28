@@ -1,10 +1,16 @@
 def call() {
     stage('Install Dependencies') {
-        steps {
+        script {
             container('nodejs') {
-                sh 'ls -la'  // Debug: Check if package.json exists
-                sh 'node -v'
-                sh 'npm install'
+                sh '''
+                ls -la  # Debug: Check if package.json exists
+                node -v
+                if [ -f package.json ]; then
+                    npm install
+                else
+                    echo "package.json not found, skipping npm install."
+                fi
+                '''
             }
         }
     }
