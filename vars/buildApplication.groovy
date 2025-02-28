@@ -1,6 +1,6 @@
 def call() {
     stage('Build Application') {
-        steps {
+        script {
             container('nodejs') {
                 sh 'npm run build || echo "No build step defined, skipping..."'
             }
