@@ -1,41 +1,64 @@
-podTemplate(
-    label: 'node-agent',
-    containers: [
-        containerTemplate(
-            name: 'jnlp',
-            image: 'node:18', // Official Node.js image with npm
-            alwaysPullImage: true,
-            ttyEnabled: true,
-            command: 'cat'
-        )
-    ]
-) {
-    node('node-agent') {
+@Library('node.js-shared-library') _  // Load the shared library
+
+pipeline {
+    agent {
+        kubernetes {
+            label 'node-agent'
+            defaultContainer 'node'
+            yaml """
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    jenkins/agent: 'true'
+spec:
+  containers:
+    - name: node
+      image: node:18
+      command: ['cat']
+      tty: true
+"""
+        }
+    }
+
+    stages {
         stage('Checkout Code') {
-            checkout scm
+            steps {
+                script {
+                    checkoutCode()
+                }
+            }
         }
 
         stage('Install Dependencies') {
-            container('jnlp') {
-                sh 'npm install'
+            steps {
+                script {
+                    installDependencies()
+                }
             }
         }
 
         stage('Run Tests') {
-            container('jnlp') {
-                sh 'npm test'
+            steps {
+                script {
+                    runTests()
+                }
             }
         }
 
         stage('Build Application') {
-            container('jnlp') {
-                sh 'npm run build'
+            steps {
+                script {
+                    buildApplication()
+                }
             }
         }
 
         stage('Deploy Application') {
-            container('jnlp') {
-                sh './deploy.sh' // Change this based on your deployment process
+            steps {
+                script {
+                    deployApplication()
+                }
             }
         }
     }
