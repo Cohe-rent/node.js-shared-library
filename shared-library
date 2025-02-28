@@ -1,8 +1,10 @@
-shared-library/
+node.js-shared-library/
 ├── vars/
-│   ├── nodePipeline.groovy
 │   ├── checkoutCode.groovy
 │   ├── installDependencies.groovy
 │   ├── runTests.groovy
 │   ├── buildApplication.groovy
 │   ├── deployApplication.groovy
+├── src/
+├── README.md
+├── resources/
