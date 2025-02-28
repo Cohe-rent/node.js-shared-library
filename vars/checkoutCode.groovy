@@ -1,7 +1,11 @@
-def call() {
-    stage('Checkout Code') {
-        steps {
-            git branch: 'main', url: 'https://github.com/Cohe-rent/node.js-shared-library.git'
+@Library('node.js-shared-library') _
+pipeline {
+    agent any
+    stages {
+        stage('Checkout') {
+            steps {
+                checkoutCode()
+            }
         }
     }
 }
