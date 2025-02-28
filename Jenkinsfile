@@ -1,63 +1,18 @@
-@Library('node.js-shared-library') _  // Load the shared library
+@Library('node.js-shared-library') _
 
 pipeline {
-    agent {
-        kubernetes {
-            label 'node-agent'
-            defaultContainer 'node'
-            yaml """
-apiVersion: v1
-kind: Pod
-metadata:
-  labels:
-    jenkins/agent: 'true'
-spec:
-  containers:
-    - name: node
-      image: node:18
-      command: ['cat']
-      tty: true
-"""
-        }
-    }
-
+    agent any
     stages {
-        stage('Checkout Code') {
+        stage('Deploy') {
             steps {
-                script {
-                    checkoutCode()
-                }
+                deployApp('staging')
             }
         }
-
-        stage('Install Dependencies') {
+        stage('Convert Text') {
             steps {
                 script {
-                    installDependencies()
-                }
-            }
-        }
-
-        stage('Run Tests') {
-            steps {
-                script {
-                    runTests()
-                }
-            }
-        }
-
-        stage('Build Application') {
-            steps {
-                script {
-                    buildApplication()
-                }
-            }
-        }
-
-        stage('Deploy Application') {
-            steps {
-                script {
-                    deployApplication()
+                    import org.mycompany.Utilities
+                    echo "Uppercase: ${Utilities.toUpperCase('hello world')}"
                 }
             }
         }
