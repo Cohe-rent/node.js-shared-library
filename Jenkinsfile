@@ -1,45 +1,41 @@
-@Library('node.js-shared-library') _
-pipeline {
-    agent any
-
-    stages {
+podTemplate(
+    label: 'node-agent',
+    containers: [
+        containerTemplate(
+            name: 'jnlp',
+            image: 'node:18', // Official Node.js image with npm
+            alwaysPullImage: true,
+            ttyEnabled: true,
+            command: 'cat'
+        )
+    ]
+) {
+    node('node-agent') {
         stage('Checkout Code') {
-            steps {
-                script {
-                    checkoutCode()
-                }
-            }
+            checkout scm
         }
 
         stage('Install Dependencies') {
-            steps {
-                script {
-                    installDependencies()
-                }
+            container('jnlp') {
+                sh 'npm install'
             }
         }
 
         stage('Run Tests') {
-            steps {
-                script {
-                    runTests()
-                }
+            container('jnlp') {
+                sh 'npm test'
             }
         }
 
         stage('Build Application') {
-            steps {
-                script {
-                    buildApplication()
-                }
+            container('jnlp') {
+                sh 'npm run build'
             }
         }
 
         stage('Deploy Application') {
-            steps {
-                script {
-                    deployApplication()
-                }
+            container('jnlp') {
+                sh './deploy.sh' // Change this based on your deployment process
             }
         }
     }
