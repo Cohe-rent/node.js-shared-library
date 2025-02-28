@@ -1,35 +1,45 @@
-@Library('node.js-shared-library') _  // Replace with your library name
 pipeline {
-    agent {
-        kubernetes {
-            yaml """
-apiVersion: v1
-kind: Pod
-spec:
-  restartPolicy: Never
-  containers:
-  - name: nodejs
-    image: node:18
-    command: [ "sleep", "infinity" ]
-    tty: true
-"""
-        }
-    }
+    agent any
 
     stages {
-        checkoutCode()
-        installDependencies()
-        runTests()
-        buildApplication()
-        deployApplication()
-    }
-
-    post {
-        success {
-            echo '✅ Build and Deployment Successful!'
+        stage('Checkout Code') {
+            steps {
+                script {
+                    checkoutCode()
+                }
+            }
         }
-        failure {
-            echo '❌ Build Failed. Check logs for details.'
+
+        stage('Install Dependencies') {
+            steps {
+                script {
+                    installDependencies()
+                }
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                script {
+                    runTests()
+                }
+            }
+        }
+
+        stage('Build Application') {
+            steps {
+                script {
+                    buildApplication()
+                }
+            }
+        }
+
+        stage('Deploy Application') {
+            steps {
+                script {
+                    deployApplication()
+                }
+            }
         }
     }
 }
